@@ -72,7 +72,7 @@ xtsum(
 ### Example
 
 #### Genral example
-Based on 
+Based on National Longitudinal Survey of Young Women, 14-24 years old in 1968
 
 ```{r}
 data("nlswork", package = "sampleSelection")
