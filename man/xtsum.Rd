@@ -4,7 +4,15 @@
 \alias{xtsum}
 \title{Calculate summary statistics for panel data}
 \usage{
-xtsum(data, variables = NULL, id = NULL, t = NULL, na.rm = FALSE)
+xtsum(
+  data,
+  variables = NULL,
+  id = NULL,
+  t = NULL,
+  na.rm = FALSE,
+  return.data.frame = FALSE,
+  dec = 3
+)
 }
 \arguments{
 \item{data}{A data.frame or pdata.frame object representing panel data.}
@@ -17,6 +25,10 @@ If not provided, all numeric variables in the data will be used.}
 \item{t}{(Optional) Name of the time identifier variable.}
 
 \item{na.rm}{Logical indicating whether to remove NAs when calculating statistics.}
+
+\item{return.data.frame}{If the return object should be a dataframe}
+
+\item{dec}{Number of significant digits to report}
 }
 \value{
 A table summarizing statistics for each variable, including Mean, SD, Min, and Max,
@@ -27,16 +39,21 @@ This function computes summary statistics for panel data, including overall
 statistics, between-group statistics, and within-group statistics.
 }
 \examples{
-# Using pdata.frame object
+
+# Using a data.frame and specifying variables, id, it, na.rm, dec
+data("nlswork", package = "sampleSelection")
+xtsum(nlswork, "hours", id = "idcode", t = "year", na.rm = TRUE, dec = 6)
+
+# Using pdata.frame object without specifying a variable
 data("Gasoline", package = "plm")
 Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
 xtsum(Gas)
 
 # Using regular data.frame with id and t specified
-data("Wages", package = "plm")
-xtsum(Wages, id = "id", t = "year")
+data("Crime", package = "plm")
+xtsum(Crime, id = "county", t = "year")
 
 # Specifying variables to include in the summary
-xtsum(Gas, variables = c("income", "expenditure"))
+xtsum(Gas, variables = c("lincomep", "lgaspcar"))
 
 }
