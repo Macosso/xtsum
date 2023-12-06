@@ -104,10 +104,10 @@ Observations
 <tbody>
 <tr>
 <td style="text-align:left;">
-\_\_\_\_\_\_\_\_\_\_\_
+___________
 </td>
 <td style="text-align:left;">
-\_\_\_\_\_\_\_\_\_
+_________
 </td>
 <td style="text-align:left;">
 </td>
