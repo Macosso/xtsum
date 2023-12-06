@@ -2,10 +2,12 @@ Package: xtsum
 Type: Package
 Title: Summary Statistics for Panel Data
 Version: 0.1.0
-Depends: R (>= 3.2.0), dplyr, knitr, magrittr, plm, purrr, tibble
+Depends: R (>= 3.2.0), knitr, magrittr, rlang, plm
+Imports: dplyr, kableExtra, sampleSelection
 Author: Joao Claudio Macosso 
 Maintainer: <joaoclaudiomacosso@gmail.com>
-Description: This package provides the `xtsum` function for calculating summary statistics for panel data. The function computes overall statistics, between-group statistics, and within-group statistics for specified variables in a panel data set.
+VignetteBuilder: knitr
+Description: xtsum is an R wrapper based on STATA's xtsum command, it is used to compute summary statistics for a panel data set. It generates overall, between-group, and within-group statistics for specified variables in a panel data set.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
