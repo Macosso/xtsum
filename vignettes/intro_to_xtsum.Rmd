@@ -1,0 +1,339 @@
+---
+title: "introduction to xtsum"
+author: "Joao Claudio Macosso"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{xtsum}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+```xtsum``` is an R wrapper based on ```STATA``` ```xtsum``` command, it used to provide summary statistics for a panel data set. It decomposes the variable $x_{it}$ into a between $(\bar{x_i})$ and within $(x_{it} − \bar{x_i} + \bar{\bar{x}}$, the global mean x being added back in make results comparable) [@stata]. 
+
+
+# Installation
+```{r, eval=FALSE}
+install.packages("xtsum")
+
+# For dev version
+# install.packages("devtools")
+devtools::install_github("macosso/xtsum")
+```
+
+# Getting Started
+
+```{r, message=FALSE, warning=FALSE}
+# Load the librarry
+library(xtsum)
+```
+
+## xtsum 
+This function computes summary statistics for panel data, including overall statistics, between-group statistics, and within-group statistics.
+
+**Usage**
+```
+xtsum(
+  data,
+  variables = NULL,
+  id = NULL,
+  t = NULL,
+  na.rm = FALSE,
+  return.data.frame = TRUE,
+  dec = 3
+)
+```
+
+**Arguments**
+
+* ```data``` A data.frame or pdata.frame object representing panel data.
+
+* ``` variables```	(Optional) Vector of variable names for which to calculate statistics. If not provided, all numeric variables in the data will be used.
+
+* ```id``` (Optional) Name of the individual identifier variable.
+
+* ```t```	(Optional) Name of the time identifier variable.
+
+* ```na.rm```	Logical indicating whether to remove NAs when calculating statistics.
+
+* ```return.data.frame``` If the return object should be a dataframe
+
+* ```dec``` Number of significant digits to report
+
+### Example
+
+#### Genral example
+Based on 
+
+```{r}
+data("nlswork", package = "sampleSelection")
+xtsum(nlswork, "hours", id = "idcode", t = "year", na.rm = T, dec = 6)
+```
+
+The table above can be interpreted as below paraphrased from [@stata].
+
+The overall and within are calculated over ```N = 28,467``` person-years of data. The between is calculated over ```n = 4,710``` persons, and the average number of years a person was observed in the hours data is```T = 6```.
+
+```xtsum``` also reports standard deviation(```SD```), minimums(```Min```), and maximums(```Max```).
+
+Hours worked varied between ```Overal Min = 1``` and ```Overall Max = 168```. Average hours worked for each woman varied between ```between Min = 1``` and ```between Max = 83.5```. 
+“Hours worked within” varied between ```within Min = −2.15``` and ```within Max = 130.1```, which is not to say that any woman actually worked negative hours. The within number refers to the deviation from each individual’s average, and naturally, some of those deviations must be negative. Then the negative value is not disturbing but the positive value is. Did some woman really deviate from her average by +130.1 hours? No. In our definition of within, we add back in the global average of 36.6 hours. Some woman did deviate
+from her average by 130.1 − 36.6 = 93.5 hours, which is still large.
+
+The reported standard deviations tell us that the variation in hours worked last week across women is nearly equal to that observed within a woman over time. That is, if you were to draw two women randomly from our data, the difference in hours worked is expected to be nearly equal to the difference for the same woman in two randomly selected years.
+
+More detailed interpretation can be found in handout[@stephenporter]
+
+
+#### Using pdata.frame object
+```{r, fig.show='hold'}
+data("Gasoline", package = "plm")
+Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
+xtsum(Gas)
+```
+#### Using regular data.frame with id and t specified
+```{r}
+data("Crime", package = "plm")
+xtsum(Crime, variables = c("polpc", "avgsen", "crmrte"), id = "county", t = "year")
+```
+
+#### Specifying variables to include in the summary
+```{r}
+xtsum(Gas, variables = c("lincomep", "lgaspcar"))
+```
+
+#### Returning a data.frame object
+Returning a data.frame might be useful if one wishes to perform additional manipulation with the data or if you intend to use other rporting packages such as stargazer [@hlavac_2018_stargazer] or kabel[@zhu_2021_create].
+```{r, fig.show='hold'}
+xtsum(Gas, variables = c("lincomep", "lgaspcar"), return.data.frame = TRUE)
+```
+
+# Other Functions
+The functions below can serve as a helper when the user is not interested in a full report but rather check a specific value.
+
+## between_max
+This function computes the maximum between-group in a panel data.
+
+*Usage*
+
+```between_max(data, variable, id = NULL, t = NULL, na.rm = FALSE)```
+
+*Arguments*
+* ```data```:	A data.frame or pdata.frame object containing the panel data.
+
+* ```variable```: The variable for which the maximum between-group effect is calculated.
+
+* ```id``` (Optional) Name of the individual identifier variable.
+
+* ```t``` (Optional) Name of the time identifier variable.
+
+* ```na.rm``` Logical. Should missing values be removed? Default is FALSE.
+
+### Example
+#### Using pdata.frame
+```{r}
+data("Gasoline", package = "plm")
+Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
+between_max(Gas, variable = "lgaspcar")
+```
+
+#### Using regular data.frame with id and t specified
+```{r}
+data("Crime", package = "plm")
+between_max(Crime, variable = "crmrte", id = "county", t = "year")
+```
+
+
+## between_min
+This function computes the minimum between-group of a panel data.
+
+*Usage*
+```between_min(data, variable, id = NULL, t = NULL, na.rm = FALSE)```
+
+*Arguments*
+
+* ```data``` A data.frame or pdata.frame object containing the panel data.
+
+* ```variable``` The variable for which the minimum between-group effect is calculated.
+
+* ```id``` (Optional) Name of the individual identifier variable.
+
+* ```t``` (Optional) Name of the time identifier variable.
+
+* ```na.rm``` Logical. Should missing values be removed? Default is FALSE.
+
+*Value*
+The minimum between-group effect.
+
+
+#### Example 
+#### Using pdata.frame
+```{r}
+data("Gasoline", package = "plm")
+Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
+between_min(Gas, variable = "lgaspcar")
+```
+
+#### Using regular data.frame with id and t specified
+```{r}
+data("Crime", package = "plm")
+between_min(Crime, variable = "crmrte", id = "county", t = "year")
+```
+
+## between_sd
+This function calculates the standard deviation of between-group in a panel data.
+
+*Usage*
+
+```between_sd(data, variable, id = NULL, t = NULL, na.rm = FALSE)```
+
+*Arguments*
+
+* ```data``` A data.frame or pdata.frame object containing the panel data.
+
+* ```variable``` The variable for which the standard deviation of between-group effects is calculated.
+
+* ```id``` (Optional) Name of the individual identifier variable.
+
+* ```t```	(Optional) Name of the time identifier variable.
+
+* ```na.rm``` Logical. Should missing values be removed? Default is FALSE.
+
+*Value*
+The standard deviation of between-group effects.
+
+### Examples 
+#### using pdata.frame
+```{r}
+data("Gasoline", package = "plm")
+Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
+between_sd(Gas, variable = "lgaspcar")
+```
+
+#### Using regular data.frame with id and t specified
+```{r}
+data("Crime", package = "plm")
+between_sd(Crime, variable = "crmrte", id = "county", t = "year")
+```
+
+## within_max 
+This function computes the maximum within-group for a panel data.
+
+*Usage*
+
+```within_max(data, variable, id = NULL, t = NULL, na.rm = FALSE)```
+
+*Arguments*
+
+* ```data``` A data.frame or pdata.frame object containing the panel data.
+
+* ```variable``` The variable for which the maximum within-group effect is calculated.
+
+* ```id``` (Optional) Name of the individual identifier variable.
+
+* ```t``` (Optional) Name of the time identifier variable.
+
+* ```na.rm``` Logical. Should missing values be removed? Default is FALSE.
+
+*Value*
+The maximum within-group effect.
+
+### Example
+#### Using pdata.frame
+```{r}
+data("Gasoline", package = "plm")
+Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
+within_max(Gas, variable = "lgaspcar")
+```
+
+#### Using regular data.frame with id and t specified
+```{r}
+data("Crime", package = "plm")
+within_max(Crime, variable = "crmrte", id = "county", t = "year")
+```
+
+
+## within_min
+
+This function computes the minimum within-group for a panel data.
+
+*Usage*
+
+```within_min(data, variable, id = NULL, t = NULL, na.rm = FALSE)```
+
+*Arguments*
+
+* ```data``` A data.frame or pdata.frame object containing the panel data.
+
+* ```variable``` The variable for which the minimum within-group effect is calculated.
+
+* ```id``` (Optional) Name of the individual identifier variable.
+
+* ```t``` (Optional) Name of the time identifier variable.
+
+* ```na.rm``` Logical. Should missing values be removed? Default is FALSE.
+
+*Value*
+The minimum within-group effect.
+
+### Example
+#### Using pdata.frame
+```{r}
+data("Gasoline", package = "plm")
+Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
+within_min(Gas, variable = "lgaspcar")
+```
+
+#### Using regular data.frame with id and t specified
+```{r}
+data("Crime", package = "plm")
+within_min(Crime, variable = "crmrte", id = "county", t = "year")
+```
+
+
+## within_sd
+This function computes the standard deviation of within-group for a panel data.
+
+*Usage*
+
+```within_sd(data, variable, id = NULL, t = NULL, na.rm = FALSE)```
+
+*Arguments*
+
+* ```data```A data.frame or pdata.frame object containing the panel data.
+
+* ```variable``` The variable for which the standard deviation of within-group effects is calculated.
+
+* ```id``` (Optional) Name of the individual identifier variable.
+
+* ```t``` (Optional) Name of the time identifier variable.
+
+* ```na.rm``` Logical. Should missing values be removed? Default is FALSE.
+
+*Value*
+The standard deviation of within-group effects.
+
+### Example
+#### Using pdata.frame
+```{r}
+data("Gasoline", package = "plm")
+Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
+within_sd(Gas, variable = "lgaspcar")
+```
+#### Using regular data.frame with id and t specified
+```{r}
+data("Crime", package = "plm")
+within_sd(Crime, variable = "crmrte", id = "county", t = "year")
+```
+
+
+# References
