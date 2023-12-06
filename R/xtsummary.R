@@ -1,3 +1,6 @@
+
+
+
 #' Calculate summary statistics for panel data
 #'
 #' This function computes summary statistics for panel data, including overall
@@ -9,34 +12,44 @@
 #' @param id (Optional) Name of the individual identifier variable.
 #' @param t (Optional) Name of the time identifier variable.
 #' @param na.rm Logical indicating whether to remove NAs when calculating statistics.
+#' @param return.data.frame If the return object should be a dataframe
+#' @param dec Number of significant digits to report
 #'
 #' @return A table summarizing statistics for each variable, including Mean, SD, Min, and Max,
 #'         broken down into Overall, Between, and Within dimensions.
 #'
 #' @examples
-#' # Using pdata.frame object
+#'
+#' # Using a data.frame and specifying variables, id, it, na.rm, dec
+#' data("nlswork", package = "sampleSelection")
+#' xtsum(nlswork, "hours", id = "idcode", t = "year", na.rm = TRUE, dec = 6)
+#'
+#' # Using pdata.frame object without specifying a variable
 #' data("Gasoline", package = "plm")
 #' Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
 #' xtsum(Gas)
 #'
 #' # Using regular data.frame with id and t specified
-#' data("Wages", package = "plm")
-#' xtsum(Wages, id = "id", t = "year")
+#' data("Crime", package = "plm")
+#' xtsum(Crime, id = "county", t = "year")
 #'
 #' # Specifying variables to include in the summary
-#' xtsum(Gas, variables = c("income", "expenditure"))
+#' xtsum(Gas, variables = c("lincomep", "lgaspcar"))
 #'
 #' @importFrom dplyr all_of select mutate group_by summarise ungroup pull sym bind_rows
 #' @importFrom knitr kable
 #' @importFrom magrittr %>%
 #' @importFrom plm pdata.frame index
-#' @importFrom purrr map
-#' @importFrom tibble data_frame
+#' @importFrom kableExtra kable_classic kbl
+#' @importFrom sampleSelection treatReg
+#' @export
 xtsum <- function(data,
                   variables = NULL,
                   id = NULL,
                   t = NULL,
-                  na.rm = FALSE) {
+                  na.rm = FALSE,
+                  return.data.frame = FALSE,
+                  dec = 3) {
   # Check if data is a data.frame
   if (!is.data.frame(data)) {
     stop("data must be a data.frame object...")
@@ -59,7 +72,8 @@ xtsum <- function(data,
 
   # If variables are not specified, use all numeric variables in the data
   if (is.null(variables)) {
-    variables <- colnames(data)[!colnames(data) %in% c(id, t)]
+    numeric_cols <- colnames(data[,sapply(data, is.numeric)])
+    variables <- numeric_cols[!numeric_cols %in% c(id, t)]
   }
   idt <- c(id,t)
 
@@ -72,46 +86,19 @@ xtsum <- function(data,
     dplyr::select(dplyr::all_of(idt), dplyr::all_of(variables))
 
   # Use sapply to calculate summary statistics for each variable
-  sum_ <- sapply(variables, function(x, data=data_){
-
-    # Calculate overall mean, between-group mean, and within-group mean
-    g_mean = mean(data[,x], na.rm = na.rm)
-
-    data %>%
-      dplyr::select(all_of(idt),all_of(x)) %>%
-      dplyr::mutate(g_mean = mean(!!sym(x), na.rm = na.rm)) %>%
-      dplyr::group_by(id) %>%
-      dplyr::mutate(Xi_mean = mean(!!sym(x), na.rm = na.rm),
-                    within_x = !!sym(x) - Xi_mean + g_mean) %>%
-      dplyr::ungroup() %>%
-      dplyr::pull(within_x) -> within_x
-
-    data %>%
-      dplyr::select(all_of(idt),all_of(x)) %>%
-      dplyr::group_by(id) %>%
-      dplyr::summarise(Xi_mean = mean(!!sym(x), na.rm = na.rm)) %>%
-      dplyr::ungroup() %>%
-      dplyr::pull(Xi_mean) -> between_x
-
-    # Create data.frames for overall, between, and within statistics
-    overal <-  data.frame(Variable = x, Dim = "Overal", Mean = mean(data[,x], na.rm = na.rm),
-                          SD = sd(data[,x], na.rm = na.rm), Min = min(data[,x], na.rm = na.rm),
-                          Max = max(data[,x], na.rm = na.rm))
-    between <- data.frame(Variable = NA, Dim = "Between", Mean = NA, SD = sd(between_x, na.rm = na.rm),
-                          Min = min(between_x, na.rm = na.rm), Max = max(between_x, na.rm = na.rm))
-    within <- data.frame(Variable = NA, Dim = "Within",Mean = NA, SD = sd(within_x, na.rm = na.rm),
-                         Min = min(within_x, na.rm = na.rm), Max = max(within_x, na.rm = na.rm))
-
-    # Combine statistics into a single data.frame
-    xtstats <- bind_rows(overal, between, within)
-
-    return(xtstats)
-  }, data_, simplify = FALSE, USE.NAMES = TRUE)
+  sum_ <- sapply(variables, xtsum_, data=data_,
+                 id = id, t = t, na.rm = na.rm, dec = dec, simplify = FALSE, USE.NAMES = TRUE)
 
   # Set options for rendering NA values in the table
   opts <- options(knitr.kable.NA = "")
 
-  # Return the summary table using knitr::kable
-  return(knitr::kable(sum_ <- do.call(bind_rows, sum_)))
+  if(return.data.frame){
+    return(do.call(bind_rows, sum_))
+  }
+  else{
+    # Return the summary table using kableExtra
+    return(kableExtra::kbl(do.call(bind_rows, sum_)) %>% kableExtra::kable_classic())
+  }
 
 }
+
