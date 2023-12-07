@@ -29,9 +29,10 @@
 #' Gas <- pdata.frame(Gasoline, index = c("country", "year"), drop.index = TRUE)
 #' xtsum(Gas)
 #'
+#'
 #' # Using regular data.frame with id and t specified
 #' data("Crime", package = "plm")
-#' xtsum(Crime, id = "county", t = "year")
+#' xtsum(Crime, variables = c("crmrte", "prbarr"), id = "county", t = "year")
 #'
 #' # Specifying variables to include in the summary
 #' xtsum(Gas, variables = c("lincomep", "lgaspcar"))
