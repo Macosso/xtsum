@@ -9,8 +9,8 @@
 `xtsum` is an R wrapper based on `STATA` `xtsum` command, it used to
 provide summary statistics for a panel data set. It decomposes the
 variable $x_{it}$ into a between $(\bar{x_i})$ and within
-$(x_{it} − \bar{x_i} + \bar{\bar{x}}$, the global mean x being added
-back in make results comparable) (StataCorp 2023).
+$(x_{it} − \bar{x_i} + \bar{\bar{x}})$, the global mean x being added
+back in make results comparable (StataCorp 2023).
 
 # Installation
 
