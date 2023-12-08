@@ -1,5 +1,6 @@
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/xtsum)](https://CRAN.R-project.org/package=xtsum)
+<!-- need [![CRAN Downloads](https://cranlogs.r-pkg.org/badges/xtsum)](https://www.r-pkg.org/pkg/xtsum) -->
 <!-- badges: end -->
 
 ================
