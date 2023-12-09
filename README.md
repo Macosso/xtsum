@@ -1,6 +1,8 @@
 <!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/xtsum)](https://CRAN.R-project.org/package=xtsum)
-<!-- need [![CRAN Downloads](https://cranlogs.r-pkg.org/badges/xtsum)](https://www.r-pkg.org/pkg/xtsum) -->
+[![CRAN status](https://www.r-pkg.org/badges/version/xtsum)](https://CRAN.R-project.org/package=xtsum) <!-- badges: start -->
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+<!-- need [![CRAN Downloads](https://cranlogs.r-pkg.org/badges/xtsum)](https://www.r-pkg.org/pkg/xtsum) [![Launch binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Macosso/xtsum/master)  -->
+
 <!-- badges: end -->
 
 ================
