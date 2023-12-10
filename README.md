@@ -225,6 +225,39 @@ woman over time. That is, if you were to draw two women randomly from
 our data, the difference in hours worked is expected to be nearly equal
 to the difference for the same woman in two randomly selected years.
 
+
+you can also get each stat seperately
+
+```
+between_sd(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+7.846585
+```
+
+```
+between_max(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+83.5
+```
+
+```
+between_min(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+1
+```
+
+```
+within_sd(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+7.520712
+```
+
+```
+within_max(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+130.0596
+```
+
+```
+within_min(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+-2.154726
+```
+
 More detailed interpretation can be found in handout(Porter n.d.)
 
 <div id="refs" class="references csl-bib-body hanging-indent"
