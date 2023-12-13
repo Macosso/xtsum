@@ -1,7 +1,9 @@
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/xtsum)](https://CRAN.R-project.org/package=xtsum) <!-- badges: start -->
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-<!-- need [![CRAN Downloads](https://cranlogs.r-pkg.org/badges/xtsum)](https://www.r-pkg.org/pkg/xtsum) [![Launch binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Macosso/xtsum/master)  -->
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable) [![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![CRAN Downloads](https://cranlogs.r-pkg.org/badges/xtsum)](https://www.r-pkg.org/pkg/xtsum) 
+<!-- need [![Launch binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Macosso/xtsum/master)  -->
 
 <!-- badges: end -->
 
@@ -222,6 +224,39 @@ worked last week across women is nearly equal to that observed within a
 woman over time. That is, if you were to draw two women randomly from
 our data, the difference in hours worked is expected to be nearly equal
 to the difference for the same woman in two randomly selected years.
+
+
+you can also get each stat seperately
+
+```
+between_sd(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+7.846585
+```
+
+```
+between_max(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+83.5
+```
+
+```
+between_min(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+1
+```
+
+```
+within_sd(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+7.520712
+```
+
+```
+within_max(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+130.0596
+```
+
+```
+within_min(nlswork, "hours", id = "idcode", t = "year", na.rm = T)
+-2.154726
+```
 
 More detailed interpretation can be found in handout(Porter n.d.)
 
